@@ -163,4 +163,13 @@ My colleague and dear friend Brandon helped me immensely with designing the UI f
 
 What became very clear very early on is that Bingo Bango was going to have 3 main views: Make Money, Get Things and You. Make Money is where you make money. Get Things is where you get things. And You is a profile settings kind of screen. By splitting the application into Make Money and Get Things, the top level views are immediately straight to the point. Those are our two usecases: Deliver things for others and get tips, or request things and have them delivered. 
 
-What also became very clea very early on is that Bingo Bango does not take itself all that seriously. The visual style may be described as a little bit crazy, it makes heavy use of Emojis for UI elements, and the "logo" is a crude drawing of a wizard that we laughed tears at when Brandon first sketched it in a few minutes. The service is not supposed to be serious or sleek — instead, it presents itself as invitingly nonchalant and fun.
+What also became very clear very early on is that Bingo Bango does not take itself all that seriously. The visual style may be described as a little bit crazy, it makes heavy use of Emojis for UI elements, and the "logo" is a crude drawing of a wizard that we laughed tears at when Brandon first sketched it in a few minutes. The service is not supposed to be serious or sleek — instead, it presents itself as invitingly nonchalant and fun.
+
+## Implementing a design system
+
+While Brandon was sketching out some screens, I decided to set up infrastructure that allows sharing UI components between different applications. I described a "design system" in Service Thinking already — a library of components that can be re-used globally. Bingo Bango's design system is [Simsalabim Design](https://github.com/bingo-bango-corp/simsalabim-design).
+
+
+In Simsalabim, I also implemented a [simple Design Token system](https://github.com/bingo-bango-corp/simsalabim-design/blob/master/src/components/ThemeProvider/themes.ts). Using the [Theme Provider component](https://github.com/bingo-bango-corp/simsalabim-design/blob/master/src/components/ThemeProvider/ThemeProvider.vue), a number of theming CSS variables can be injected into anything nested inside. That made it a breeze to offer the three themes Bingo Bango has — Dark, Light, and Insane.
+
+## 
