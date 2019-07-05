@@ -55,6 +55,8 @@ Now, I was able to establish a rudimentary "permission system" — any of these 
 - Owner may `cancel`.
 - Assignee may `drop`.
 
+<img src='https://raw.githubusercontent.com/bingo-bango-corp/documentation/master/assets/State%20Machine.svg' width=500>
+
 Later on, I encoded these definitions into a *state machine*. What that is, what it means, and how it works — later in this documentation. Stay tuned. Like and subscribe.
 
 ### Communication
@@ -200,4 +202,3 @@ Building a real-time chat definitely wasn't easy. But it was certainly fun and I
 The [Chat component](https://github.com/bingo-bango-corp/app/blob/master/src/components/Chat/Chat.vue) takes an ID of a job (as chats are always connected with a job) and then initializes a realtime connection to the `chat` collection. There are a number of utility functions in the Chat component, such as [otherPersonsRole](https://github.com/bingo-bango-corp/app/blob/master/src/components/Chat/Chat.vue#L102). Using these, the component renders a `ChatMessage` for each message in the `chat` collection.
 
 One interesting thing was implementing the "typing" indicator. As soon as the user starts typing, the Chat component sets a property named after their user id in a document called `typing` to `true`. Both clients write to this same document, and both have two-way data binding set up with it. Then, a [simple debounce mechanism](https://github.com/bingo-bango-corp/app/blob/master/src/components/Chat/Chat.vue#L131) sets typing to false after a few seconds of inactivity. With this approach, displaying the typing indicator becomes just a matter of a simple conditional render.
-
