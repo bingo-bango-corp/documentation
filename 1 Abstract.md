@@ -14,7 +14,7 @@ It's like Deliveroo, but for anything. It's like Amazon Fresh, but faster. It's 
 
 A few months ago, one of my coworkers, Dennis, requested "some lunch, really, anything is fine" on our team slack. "Just bring me something if you're going out for lunch, I'll pay you back + 2 bucks on top." 
 
-Brandon, another coworker, swiftly responded: "🖕 That should be an app." 
+Brandon, another coworker, swiftly responded: "☝ That should be an app." 
 
 Me, very quickly realizing it's potential, immediately chimed in with "Brandon, delete this". And so he did. The following weekend, Bingo Bango was born.
 
