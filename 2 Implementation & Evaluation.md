@@ -211,9 +211,31 @@ In the app itself, I then wrapped this component into a [new one called `JobCard
 
 _JobCardWithActions displaying different properties & actions for JobCard depending on context._
 
+## Get Things
+
+<img src='https://raw.githubusercontent.com/bingo-bango-corp/documentation/master/assets/GetThings.png' width=500>
+
+The Get Things view allows you to create new requests, see the status of existing ones, as well as view your request history. Behind the scenes, it simply runs a query for all jobs owned by you — and then locally filters for either terminal or open states.
+
+## Make Money
+
+<img src='https://raw.githubusercontent.com/bingo-bango-corp/documentation/master/assets/MakeMoney.png' width=500>
+
+On the Make Money view, you see requests near you. You can select a request and assign yourself to it. Here, the app runs a _geoquery_ with a certain radius to only retrieve those jobs that are actually near the user.
+
+### Current Job Badge
+
+<img src='https://raw.githubusercontent.com/bingo-bango-corp/documentation/master/assets/currentJob.png' width=400>
+
+When assigned to a job, the Current Job Badge follows you around the app. When you click it, you go to the Chat View for the respective job.
+
 ## The Chat View
 
 Building a real-time chat definitely wasn't easy. But it was certainly fun and I learned a lot.
+
+<img src='https://raw.githubusercontent.com/bingo-bango-corp/documentation/master/assets/ChatView.png' width=400>
+
+_The same chat with an expanded JobCard and, after sending some more messages, a collapsed one._
 
 The [Chat component](https://github.com/bingo-bango-corp/app/blob/master/src/components/Chat/Chat.vue) takes an ID of a job (as chats are always connected with a job) and then initializes a realtime connection to the `chat` collection. There are a number of utility functions in the Chat component, such as [otherPersonsRole](https://github.com/bingo-bango-corp/app/blob/master/src/components/Chat/Chat.vue#L102). Using these, the component renders a `ChatMessage` for each message in the `chat` collection.
 
