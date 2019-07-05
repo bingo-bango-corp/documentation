@@ -1,4 +1,4 @@
-## It works, but it's nowhere near perfect
+# In retrospect
 
 What did I want to make? A fully functional web service. Did I do that? Yeah. Is it perfect? Not at all.
 
