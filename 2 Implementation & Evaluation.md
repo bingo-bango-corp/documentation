@@ -181,6 +181,10 @@ While Brandon was sketching out some screens, I decided to set up infrastructure
 
 In Simsalabim, I also implemented a [simple Design Token system](https://github.com/bingo-bango-corp/simsalabim-design/blob/master/src/components/ThemeProvider/themes.ts). Using the [Theme Provider component](https://github.com/bingo-bango-corp/simsalabim-design/blob/master/src/components/ThemeProvider/ThemeProvider.vue), a number of theming CSS variables can be injected into anything nested inside. That made it a breeze to offer the three themes Bingo Bango has — Dark, Light, and Insane.
 
+<img src='https://raw.githubusercontent.com/bingo-bango-corp/documentation/master/assets/Theming.png' width=500>
+
+_The Make Money view in Dark & Light theme._
+
 ## Setting up the route structure
 
 For routes, I chose a pretty crazy approach. The first component I built, even before settling on top level routes, was the [BottomNav](https://github.com/bingo-bango-corp/simsalabim-design/blob/master/src/components/BottomNav/BottomNav.vue), and with it, I defined the [BingoRoute interface](https://github.com/bingo-bango-corp/simsalabim-design/blob/master/src/components/BottomNav/interfaces.ts). BottomNav simply parses a `routes` object passed to it as a prop and displays top level navigation targets automatically. It even allows passing an instance of `i18n-vue` for translations. This way, all that needs to be done in the parent application consuming this component is to pass the correctly configured `routes` object - which of course can be passed as-is to `vue-router` as well.
@@ -202,6 +206,10 @@ One of the most interesting challenges with this frontend application was handli
 Fist, I implemented a [generic, almost purely representational `JobCard` in Simsalabim](https://github.com/bingo-bango-corp/simsalabim-design/blob/master/src/components/JobCard/JobCard.vue). JobCard consumes an array of `BingoActions`. Each action corresponds to a button shown on the card and includes representational configuration, such as the button's title, its color and the `onClick` handler. When the action is clicked, the `onClick` handler for this action is emitted with an event to the parent component. This way, the parent can take care of calling actions, and the `JobCard` stays representational.
 
 In the app itself, I then wrapped this component into a [new one called `JobCardWithActions`](https://github.com/bingo-bango-corp/app/blob/master/src/components/JobCardWithActions/JobCardWithActions.vue). Depending on if the user is the owner or assignee for a given job, this component maps [actions](https://github.com/bingo-bango-corp/app/blob/master/src/components/JobCardWithActions/assigneeActionsForStates.ts) and [properties](https://github.com/bingo-bango-corp/app/blob/master/src/components/JobCardWithActions/assigneePropsForStates.ts) for each possible `state`. After writing this component, I could drop it in at any possible point in the app and it just worked - always displaying exactly the right information and actions.
+
+<img src='https://raw.githubusercontent.com/bingo-bango-corp/documentation/master/assets/JobCardWithActions.png' width=500>
+
+_JobCardWithActions displaying different properties & actions for JobCard depending on context._
 
 ## The Chat View
 
