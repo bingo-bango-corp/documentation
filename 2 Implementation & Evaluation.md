@@ -55,7 +55,11 @@ Now, I was able to establish a rudimentary "permission system" — any of these 
 - Owner may `cancel`.
 - Assignee may `drop`.
 
+
 <img src='https://raw.githubusercontent.com/bingo-bango-corp/documentation/master/assets/State%20Machine.png' width=500>
+
+_In the above illustrations, owner actions are represented in cyan, and assignee actions are red._
+
 
 Later on, I encoded these definitions into a *state machine*. What that is, what it means, and how it works — later in this documentation. Stay tuned. Like and subscribe.
 
@@ -74,6 +78,10 @@ I had no special requirements for my tech stack regarding the API. It had to be 
 On the database side of things however, things became a little more interesting. I needed something that works with a large amount of data, quickly, and in real-time. I needed it to enable anything from a live chat to updating clients immediately as a job's state changed. And I needed something that I could run _geolocation queries_ on. That's a quite specific set of requirements.
 
 Probably the most important requirement however was the ability to get up and running quickly. After all, I had about 3 months to build a whole service. The tech stack didn't just need to work and be viable, it also needed to be _easy to use_, especially since I am by no means a professional software engineer.
+
+
+<img src='https://raw.githubusercontent.com/bingo-bango-corp/documentation/master/assets/Architecture.png' width=500>
+
 
 After evaluating countless options, I decided to go with **Google Cloud** and **Firebase**. Google Cloud is one of the largest cloud infrastructure providers, used by the likes of Spotify and Netflix. Firebase is another Google service that wraps around some more advanced Google Cloud features and provides an easier way to get started, through beginner-friendly client APIs for services. It also offers an extremely easy to use authentication platform that makes integrating social logins a breeze. The biggest reason for using Google Cloud however: _Cloud Firestore_.
 
