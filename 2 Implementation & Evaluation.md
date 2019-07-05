@@ -55,7 +55,7 @@ Now, I was able to establish a rudimentary "permission system" — any of these 
 - Owner may `cancel`.
 - Assignee may `drop`.
 
-<img src='https://raw.githubusercontent.com/bingo-bango-corp/documentation/master/assets/State%20Machine.svg' width=500>
+<img src='https://raw.githubusercontent.com/bingo-bango-corp/documentation/master/assets/State%20Machine.png' width=500>
 
 Later on, I encoded these definitions into a *state machine*. What that is, what it means, and how it works — later in this documentation. Stay tuned. Like and subscribe.
 
