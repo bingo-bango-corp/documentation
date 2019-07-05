@@ -4,7 +4,7 @@ From the very get go, I set out not only to develop a concept for a potential se
 
 That means that in addition to just designing and coming up with the concept itself, I had to think about a huge amount of different challenges. From deciding on a suitable tech stack, to ensuring security with real users, to authenticating and validating user credentials — all those things don't exactly matter in a prototyping context. But if a piece of software is inteded to launch and be used out there, by real people, treating all of these challenges lightly will not only result in a service horribly failing, but can even put you in jail for leaking personal information.
 
-In addition, a prototype runs in a very controlled environment and is not publicly accessible. And its goal is not to be used — its goal is to serve as a tool in testing and validating ideas. As a result of that, you don't need to think about edge cases, or test and assure quality in any possible context. When building a real, production-ready application, you need to think about _exactly these_ edge cases. What happens if the user looses the connection in this very specific moment? Can my users perform an action a million times, resulting in insane costs for running the service? Could a user somehow "hack" the service by exploiting weak validations? Or maybe, could a user even cause harm to another user through one of these loopholes?
+In addition, a prototype runs in a very controlled environment and is not publicly accessible. And its goal is not to be used — its goal is to serve as a tool in testing and validating ideas. As a result of that, you don't need to think about edge cases or test and assure quality in any possible context. When building a real, production-ready application, you need to think about _exactly these_ edge cases. What happens if the user looses the connection in this very specific moment? Can my users perform an action a million times, resulting in insane costs for running the service? Could a user somehow "hack" the service by exploiting weak validations? Or maybe, could a user even cause harm to another user through one of these loopholes?
 
 Real services are used by real people. That comes with a great responsibility for you as their designer and developer. Shoddy implementations can result in grave consequences, even if they are unlikely or don't seem all that grave from your point of view. Maybe some "rare" edge case doesn't seem worth fixing — but for that one user that is affected, unexpected behaviour of the service in the context of a large transaction might cause a mental breakdown.
 
@@ -12,11 +12,13 @@ In practice, what this meant for me: _My code had to be bullet-proof_. As a Prod
 
 # Designing a service
 
-In _Service Thinking_, I write in detail about a service being more than just what the user sees. In fact, the underlying logic is what enables the service to function at all. In a standard API <> Client model, the user interface is nothing more than … a _client_. The _service_, really, is nothing more than the centralized business logic that results from choreographed functionality running behind the scenes, exchanging data with potentially thousands of clients constantly and concurrently.
+In _Service Thinking_, I write in detail about a service being more than just what the user sees. In fact, the underlying logic is what enables the service to function at all. In a standard API <> Client model, the user interface is nothing more than … a _client_. The _service_, really, is the centralized business logic that results from choreographed functionality running behind the scenes, exchanging data with potentially thousands of clients constantly and concurrently.
 
 And so, at first, I set out to design a rough user journey. What I wanted to understand is exactly how a user will interact with a service, how they request items, and how those requests transition through different states during their lifecycle.
 
 ## Jobs, Actions and Job Relationships
+
+Based on the idea, I established some terminology for myself.
 
 - A __Job__ is an entity that can be created by users, holding information such as the user's location, a description of what they want, as well as the amount they want to tip.
 - A __Job Owner__ is the user that created a specific job.
@@ -63,9 +65,9 @@ At this point in the development process, I had an exact idea of what Bingo Bang
 
 # Designing a tech stack for hyperlocal, real-time interactions
 
-In _Service Thinking_, I also mention how User Experience goals directly affects raw technical choices regarding the technology stack. One of the examples I gave was Google Docs, which is a product priding itself on its real-time processing capabilities. Interestingly, the real-time, hyperlocal aspect of Bingo Bango was one of the major decision influencers when I chose the tech stack for it too.
+In _Service Thinking_, I also mention how User Experience goals directly affects raw technical choices regarding the technology stack. One of the examples I gave was Google Docs, which is a product priding itself on its real-time processing capabilities. Interestingly, the real-time, hyperlocal aspect of Bingo Bango was one of the major decision influences when I chose the tech stack for it too.
 
-I had no special requirements for my tech stack regardin the API. It had to be an API. It had to work. Nothing crazy. Any solution for hosting APIs out there in the market would do.
+I had no special requirements for my tech stack regarding the API. It had to be an API. It had to work. Nothing crazy. Any solution for hosting APIs out there in the market would do.
 
 On the database side of things however, things became a little more interesting. I needed something that works with a large amount of data, quickly, and in real-time. I needed it to enable anything from a live chat to updating clients immediately as a job's state changed. And I needed something that I could run _geolocation queries_ on. That's a quite specific set of requirements.
 
@@ -117,7 +119,7 @@ In addition, I had to find a way to store if one of the users is currently typin
 
 ### Finding nearby jobs
 
-Now that I knew roughly what entities I needed and what they looked like, I had to decide on some data formats. The biggest challenge: Location.
+Now that I knew roughly what entities I needed and what they looked like, I had to decide on some data formats. The biggest challenge: location.
 
 Initially, I stored location as coordinates — latitude and longitude. I quickly realized this was a dead end, because my main use case for jobs was _finding all jobs within a certain radius of a user_. With the query types provided by Firestore, it is impossible query on lat and long directly, meaning the only possible way would have been to retrieve _all_ jobs and then perform complicated client-side arithmetic to filter those jobs outside a certain radius. Which was not an acceptable way of solving this.
 
@@ -142,3 +144,23 @@ First, I defined what my actions actually _had to do_.
 Now I realized something: I need to keep track of these transitions if I want to properly understand, record and display to the user a history of each respective job. So, I decided to inject `event` objects into the `chat` subcollection of the job document. This turned out to be a great decision because it was now trivial to display a full, ordered history of both messages and events like "You marked this as delivered" to the user on a job view.
 
 As I learned over and over again at work, _a real state machine validates transitions_. That means that it won't allow a job to go from a terminal state such as `cancelled` to `delivered` for example, in accordance with business logic. This is the only way to ensure that if a client for whatever reason behaves unexpectedly, it can not lead to an _unprocessable entity_ — a database entry that cannot be explained. For this reason, I added validations on each action, ensuring that the job is allowed to actually transition in the requested way, and that the user that triggered the action is actually allowed to do so.
+
+# The light side
+
+It was time to start working on the client application.
+
+Again, first up, I had to make a decision on what technology I want to work with for "the app". My biggest competence is a JavaScript framework called Vue, so I naturally gravitated towards using it. However, I still strongly considered native technologies, or a cross-platform framework like Flutter.
+
+The web is no longer what it used to be — more and more "app-like" functionality is enabled constantly by new APIs being standardized, and operating systems allowing deeper integration with their system for websites. A lot, probably most, usecases can these days be handled by a web application, with almost native feel. Both on iOS and Android, it's now even possible to install so-called "PWAs" (Progressive Web Applications) straight onto the system, offering behavior very similar to a native app. Websites can even work offline and send push notifications as well as access many device APIs such as geolocation.
+
+Because of this and my highly limited time budget, I decided to implement a PWA in Vue. However, because I always want to learn something new with every new project, I went with TypeScript on top, which is a transpiler that enriches JavaScript with strongly-typed syntax and fantastic tooling.
+
+## Back to the drawing board
+
+This is the point at which some good old UI & UX Design comes into play.
+
+My colleague and dear friend Brandon helped me immensely with designing the UI for Bingo Bango, and I'd like to thank him a lot for that!
+
+What became very clear very early on is that Bingo Bango was going to have 3 main views: Make Money, Get Things and You. Make Money is where you make money. Get Things is where you get things. And You is a profile settings kind of screen. By splitting the application into Make Money and Get Things, the top level views are immediately straight to the point. Those are our two usecases: Deliver things for others and get tips, or request things and have them delivered. 
+
+What also became very clea very early on is that Bingo Bango does not take itself all that seriously. The visual style may be described as a little bit crazy, it makes heavy use of Emojis for UI elements, and the "logo" is a crude drawing of a wizard that we laughed tears at when Brandon first sketched it in a few minutes. The service is not supposed to be serious or sleek — instead, it presents itself as invitingly nonchalant and fun.
