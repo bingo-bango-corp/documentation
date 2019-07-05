@@ -169,7 +169,35 @@ What also became very clear very early on is that Bingo Bango does not take itse
 
 While Brandon was sketching out some screens, I decided to set up infrastructure that allows sharing UI components between different applications. I described a "design system" in Service Thinking already — a library of components that can be re-used globally. Bingo Bango's design system is [Simsalabim Design](https://github.com/bingo-bango-corp/simsalabim-design).
 
-
 In Simsalabim, I also implemented a [simple Design Token system](https://github.com/bingo-bango-corp/simsalabim-design/blob/master/src/components/ThemeProvider/themes.ts). Using the [Theme Provider component](https://github.com/bingo-bango-corp/simsalabim-design/blob/master/src/components/ThemeProvider/ThemeProvider.vue), a number of theming CSS variables can be injected into anything nested inside. That made it a breeze to offer the three themes Bingo Bango has — Dark, Light, and Insane.
 
-## 
+## Setting up the route structure
+
+For routes, I chose a pretty crazy approach. The first component I built, even before settling on top level routes, was the [BottomNav](https://github.com/bingo-bango-corp/simsalabim-design/blob/master/src/components/BottomNav/BottomNav.vue), and with it, I defined the [BingoRoute interface](https://github.com/bingo-bango-corp/simsalabim-design/blob/master/src/components/BottomNav/interfaces.ts). BottomNav simply parses a `routes` object passed to it as a prop and displays top level navigation targets automatically. It even allows passing an instance of `i18n-vue` for translations. This way, all that needs to be done in the parent application consuming this component is to pass the correctly configured `routes` object - which of course can be passed as-is to `vue-router` as well.
+
+After building BottomNav, I set up some skeleton routes and [configured vue-router](https://github.com/bingo-bango-corp/app/blob/master/src/router.ts). Naturally, my next step was setting up the authentication system.
+
+## Handling Authentication and Permissions
+
+As already mentioned, I chose Firebase Authentication as my authentication provider, due to its ease of use and support for all major oAuth services. Implementing it in Vue was pretty easy. Naturally, I first [set up Firebase initialization](https://github.com/bingo-bango-corp/app/blob/master/src/initFirebase.ts). After that, I changed my `main.ts` so that after Firebase is initialized, a callback from `onAuthStateChanged` is awaited [before the Vue app itself gets initialized](https://github.com/bingo-bango-corp/app/blob/master/src/main.ts). This way, I was sure that the app always knows its auth state before any route guards run.
+
+Now, I set up a simple sync of my authentication data with the `vuex` store. This way, anywhere in the application components may access profile information of the currently logged-in user from a centralized location. This store is immediately populated with Firebase Authentication information right in the `initializeApp` function.
+
+The natural next step was [implementing route guards](https://github.com/bingo-bango-corp/app/blob/master/src/router.ts#L109) so that non logged-in users would simply be forwarded to the login screen. Here, I realized another challenge: Making sure that the app has all permissions that it requires to run. Bingo Bango in order to work properly needs location and notification permissions. There was little sense in allowing the app to run without those, so we decided to require users to grant permissions in a blocking manner. For this, I implemented a [permissions vuex module](https://github.com/bingo-bango-corp/app/blob/master/src/store/modules/permissions.ts) that keeps track of permissions and also handles asking for them. Together with the [permissions view](https://github.com/bingo-bango-corp/app/blob/master/src/views/permissions/permissions.vue) and the [appropriate route guards](https://github.com/bingo-bango-corp/app/blob/master/src/router.ts#L109), the app now automatically asked for missing permissions.
+
+## Representing Jobs and Job States
+
+One of the most interesting challenges with this frontend application was handling jobs. Depending on your relationship with the job (owner or assignee), as well as the current state of the job, we wanted to display different information as well as allow different actions.
+
+Fist, I implemented a [generic, almost purely representational `JobCard` in Simsalabim](https://github.com/bingo-bango-corp/simsalabim-design/blob/master/src/components/JobCard/JobCard.vue). JobCard consumes an array of `BingoActions`. Each action corresponds to a button shown on the card and includes representational configuration, such as the button's title, its color and the `onClick` handler. When the action is clicked, the `onClick` handler for this action is emitted with an event to the parent component. This way, the parent can take care of calling actions, and the `JobCard` stays representational.
+
+In the app itself, I then wrapped this component into a [new one called `JobCardWithActions`](https://github.com/bingo-bango-corp/app/blob/master/src/components/JobCardWithActions/JobCardWithActions.vue). Depending on if the user is the owner or assignee for a given job, this component maps [actions](https://github.com/bingo-bango-corp/app/blob/master/src/components/JobCardWithActions/assigneeActionsForStates.ts) and [properties](https://github.com/bingo-bango-corp/app/blob/master/src/components/JobCardWithActions/assigneePropsForStates.ts) for each possible `state`. After writing this component, I could drop it in at any possible point in the app and it just worked - always displaying exactly the right information and actions.
+
+## The Chat View
+
+Building a real-time chat definitely wasn't easy. But it was certainly fun and I learned a lot.
+
+The [Chat component](https://github.com/bingo-bango-corp/app/blob/master/src/components/Chat/Chat.vue) takes an ID of a job (as chats are always connected with a job) and then initializes a realtime connection to the `chat` collection. There are a number of utility functions in the Chat component, such as [otherPersonsRole](https://github.com/bingo-bango-corp/app/blob/master/src/components/Chat/Chat.vue#L102). Using these, the component renders a `ChatMessage` for each message in the `chat` collection.
+
+One interesting thing was implementing the "typing" indicator. As soon as the user starts typing, the Chat component sets a property named after their user id in a document called `typing` to `true`. Both clients write to this same document, and both have two-way data binding set up with it. Then, a [simple debounce mechanism](https://github.com/bingo-bango-corp/app/blob/master/src/components/Chat/Chat.vue#L131) sets typing to false after a few seconds of inactivity. With this approach, displaying the typing indicator becomes just a matter of a simple conditional render.
+
